@@ -6,19 +6,19 @@ block content
     table.table
       thead
         tr
-          th Doctor Name
-          th FEE
-          th Doctor ID
-          th Appointments
+          th product Name
+          th price
+          th product ID
+          th colour
           th Remove 
       tbody
         each item in cart
           - total +=Number(item.fee);
           tr
             td=item.name
-            td=item.fee
-            td=item.docid
-            td=item.appointments
+            td=item.price
+            td=item.id
+            td=item.colour
             td 
               a(href="/products/cart/remove/"+item._id,class="btn btn-danger") Remove
       tfoot
