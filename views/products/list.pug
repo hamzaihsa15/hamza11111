@@ -18,9 +18,9 @@ block content
             each product in products
                 tr
                     td=product.name
-                    td=product.fee
-                    td=product.docid
-                    td=product.appointments
+                    td=product.price
+                    td=product.id
+                    td=product.colour
                     td 
                         a(href="/products/delete/"+product._id,class="btn btn-danger",style="margin-right:10px") Delete
                         a(href="/products/update/"+product._id,class="btn btn-warning",style="margin-right:10px") Edit
