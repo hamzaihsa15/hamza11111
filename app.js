@@ -3,36 +3,36 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var session = require('express-session');
+var mongoose = require("mongoose");
 var indexRouter = require('./routes/index');
-var userRouter = require('./routes/user');
-var productRouter = require('./routes/products');
-var wrouter = require('./routes/Wish');
-var sessionauth = require("./middleware/sessionAuth");
-const mongoose= require("mongoose");
-const sessionAuth = require('./middleware/sessionAuth');
-
+var usersRouter = require('./routes/users');
+var productsRouter = require('./routes/products');
+var session = require("express-session");
+var sessionauth = require("./middlewares/sessionauth");
 var app = express();
-//session
-app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 60000 }}));
-app.use(sessionAuth);
+app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 60000 }}))
 
 // view engine setup
+app.use(
+  session({
+  secret: 'dummytext',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: true }
+})
+);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-
-
+app.use(sessionauth);
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/index', indexRouter);
-app.use('/', userRouter);
-app.use('/user', userRouter);
-app.use('/products', productRouter);
-app.use('/wishs', wrouter);
+app.use('/', indexRouter);
+app.use('/products', productsRouter);
+app.use('/', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -49,12 +49,19 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+const db =
+  "mongodb+srv://ali:123@cluster0.gcvge.mongodb.net/cluster0?retryWrites=true&w=majority";
 
-mongoose.connect("mongodb+srv://hamza:1234@cluster0.kdzfc.mongodb.net/cluster0?retryWrites=true&w=majority",{ useNewUrlParser: true ,useUnifiedTopology: true}).then(()=>{
-  console.log("Connection to mongoDB Successfull");
-}).catch((err)=>{
-console.log("Connection error");
-console.log(err);
-});
-
+mongoose
+  .connect(db, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    socketTimeoutMS: 0,
+  })
+  .then(() => {
+   
+    console.clear();
+    console.log(`Connected to db...`);
+  
+  });
 module.exports = app;

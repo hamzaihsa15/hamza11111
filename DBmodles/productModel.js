@@ -15,7 +15,7 @@ function validateProduct(data) {
 	  name: Joi.string().min(3).max(20).required(),
 	  price: Joi.number().min(0).required(),
       city: Joi.string().required(),
-      location: Joi.string().required(),
+      colour: Joi.string().required(),
       detail: Joi.string()
       
 	});

@@ -1,80 +1,55 @@
-const cookieParser = require('cookie-parser');
 var express = require('express');
 var router = express.Router();
-var {Product,validate} = require("../DBmodles/productModel");
-
+var productmodel = require("../models/product");
+var checksessionauth = require("../middlewares/checksessionauth");
 /* GET home page. */
 router.get('/', async function(req, res, next) {
-  let products= await Product.find();
-  res.render('products/productList',{products});
+  let product = await productmodel.find();
+  console.log(req.session.user);
+  res.render('products/list',{title:"Hospitals DATABASE",products:product});
 });
-
-router.get('/add',function(req, res, next) {
+router.get('/add',checksessionauth, async function(req, res, next) {
   res.render('products/add');
 });
-
-
-//add products
 router.post('/add', async function(req, res, next) {
-
-  let product = new Product(req.body);
-  const { error } = validate(req.body);
-	if (error) return res.status(400).send(error.details[0].message);
+  let product = new productmodel(req.body);
   await product.save();
   res.redirect('/products');
 });
-
-//delet products
 router.get('/delete/:id', async function(req, res, next) {
-  let product = await Product.findByIdAndDelete(req.params.id);
+  let product = await productmodel.findByIdAndDelete(req.params.id);
   res.redirect('/products');
 });
-
-//edit product
-
-router.get('/edit/:id', async function(req, res, next) {
-  let product = await Product.findById(req.params.id);
-  res.render("products/edit" , { product });
-  });
-router.post('/edit/:id', async function(req, res, next) {
-  let product = await Product.findById(req.params.id);
-  console.log(product);
-  console.log(req.body);
-  product.name = req.body.name;
-  product.price = req.body.price;
-  const { error } = validate(req.body);
-	if (error) return res.status(400).send(error.details[0].message);
-  await product.save();
-  res.redirect('/products');
-  });
-
-  //cart
-
-    router.get('/cart', async function(req, res, next) { 
-    let cart = req.cookies.cart;
-    if(!cart) cart=[];
-     res.render('products/cart',{cart});
-  });
-
-  router.get('/cart/:id', async function(req, res, next) {
-  let product = await Product.findById(req.params.id);
-  console.log("ADd to cart");
-  let cart = [];
+router.get('/cart/:id', async function(req, res, next) {
+  let product = await productmodel.findById(req.params.id);
+  console.log("Add this Product in Cart");
+  let cart =[];
   if(req.cookies.cart) cart = req.cookies.cart;
   cart.push(product);
   res.cookie("cart",cart);
   res.redirect('/products');
 });
-
 router.get('/cart/remove/:id', async function(req, res, next) {
-  console.log("Delete cookie");
-  let cart = [];
+  // let product = await productmodel.findById(req.params.id);
+  // console.log("Add this Product in Cart");
+  let cart =[];
   if(req.cookies.cart) cart = req.cookies.cart;
-  cart.splice(cart.findIndex(c=> c._id=req.params.id),1);
+  cart.splice(cart.findIndex(c=>(c._id==req.params.id)),1);
   res.cookie("cart",cart);
-  res.redirect('/products/cart');
+  res.redirect("/cart");
 });
-
-
+router.get('/update/:id', async function(req, res, next) {
+  let product = await productmodel.findById(req.params.id);
+  res.render('products/update',{product});
+});
+router.post('/update/:id', async function(req, res, next) {
+  let product = await productmodel.findById(req.params.id);
+  product.name= req.body.name;
+  product.fee= req.body.fee;
+  product.docid= req.body.docid;
+  product.appointments= req.body.appointments;
+  await product.save();
+  res.redirect('/products');
+});
 
 module.exports = router;
