@@ -1,18 +1,18 @@
 extends ../layout
 
 block content
-    h1 Update Existing Doctor
+    h1 Update Existing product
     form(action="/products/update/"+product._id,method="post")
         .form-group
-            label(for="name") Doctor Name
+            label(for="name") Product Name
             input#name(type="text", class="form-control",name="name", value=product.name)
         .form-group
-            label(for="fee") FEE
-            input#fee(type="text", class="form-control",name="fee", value=product.fee)
+            label(for="price") price
+            input#price(type="text", class="form-control",name="price", value=product.price)
         .form-group
-            label(for="docid") Doctor ID
-            input#docid(type="text", class="form-control",name="docid", value=product.docid)
+            label(for="id")  ID
+            input#id(type="text", class="form-control",name="id", value=product.id)
         .form-group
-            label(for="appointments") Appointments
-            input#appointments(type="text", class="form-control",name="appointments", value=product.appointments)
+            label(for="colour") Colour
+            input#colour(type="text", class="form-control",name="colour", value=product.colour)
         input(type="submit", class="btn btn-info")
